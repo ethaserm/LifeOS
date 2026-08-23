@@ -43,10 +43,33 @@ export async function render(mount, { store, go }) {
     )
   );
 
+  const agendaHost = h('div', {});
+  const agendaCard = card('Agenda', agendaHost);
   const taskHost = h('div', {});
   const taskCard = card('Today', taskHost);
-  mount.append(pushCard, taskCard);
+  mount.append(pushCard, agendaCard, taskCard);
+  paintAgenda();
   paintTasks();
+
+  function paintAgenda() {
+    agendaHost.innerHTML = '';
+    const cal = store.get('calendar', null);
+    const events = cal?.date === dayKey() ? (cal.events || []) : [];
+
+    if (!cal) {
+      agendaHost.append(h('p', { class: 'empty' },
+        'Calendar not connected yet — it syncs from Google once the scheduled job is set up.'));
+      return;
+    }
+    if (!events.length) {
+      agendaHost.append(h('p', { class: 'empty' }, 'Nothing in the calendar today.'));
+      return;
+    }
+    events.forEach(e => agendaHost.append(
+      h('div', { class: 'row', style: 'padding:7px 0;border-top:1px solid var(--line);gap:12px' },
+        h('span', { class: 'l', style: 'width:54px' }, e.allDay ? 'all day' : e.time),
+        h('span', {}, e.title))));
+  }
 
   function paintTasks() {
     taskHost.innerHTML = '';
@@ -92,5 +115,6 @@ export async function render(mount, { store, go }) {
 
   const offA = store.onChange('pushups', () => { r.set(countOn(store, dayKey()), goalOf(store)); });
   const offB = store.onChange('tasks', paintTasks);
-  return () => { offA(); offB(); };
+  const offC = store.onChange('calendar', paintAgenda);
+  return () => { offA(); offB(); offC(); };
 }

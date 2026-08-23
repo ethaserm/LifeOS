@@ -29,6 +29,7 @@
 [data-tab="projects"] { --accent:#1D9E8F; --accent-soft:#E4F4F2; }
 [data-tab="learning"] { --accent:#D4537E; --accent-soft:#FBEBF1; }
 [data-tab="ai"]       { --accent:#7C5CE0; --accent-soft:#F1EDFC; }
+[data-tab="review"]   { --accent:#4A6FA5; --accent-soft:#EAF0F8; }
 [data-tab="settings"] { --accent:#6B6B7B; --accent-soft:#EFEFF3; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }

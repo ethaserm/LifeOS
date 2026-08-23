@@ -13,6 +13,7 @@ const ICONS = {
   projects: '<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/>',
   learning: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/>',
   ai:       '<path d="M12 3.5l1.85 5.15L19 10.5l-5.15 1.85L12 17.5l-1.85-5.15L5 10.5l5.15-1.85z"/><path d="M18 16l.8 2.2L21 19l-2.2.8L18 22l-.8-2.2L15 19l2.2-.8z"/>',
+  review:   '<path d="M4 19V6.5A2.5 2.5 0 0 1 6.5 4H18a2 2 0 0 1 2 2v14H6.5A2.5 2.5 0 0 1 4 19z"/><path d="M8 9h8M8 13h5"/>',
   settings: '<path d="M4 7h9M19 7h1M4 17h5M15 17h5"/><circle cx="16" cy="7" r="2.4"/><circle cx="12" cy="17" r="2.4"/>',
   more:     '<circle cx="5.5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18.5" cy="12" r="1.7"/>'
 };
@@ -31,7 +32,8 @@ const TABS = [
   { id: 'projects', name: 'Projects', load: () => import('./mod/projects.js') },
   { id: 'learning', name: 'Learning', load: () => import('./mod/learning.js') },
   { id: 'ai',       name: 'AI',       load: () => import('./mod/ai.js') },
-  { id: 'settings', name: 'Settings', phase: 'P6' }
+  { id: 'review',   name: 'Review',   load: () => import('./mod/review.js') },
+  { id: 'settings', name: 'Settings', load: () => import('./mod/settings.js') }
 ];
 
 const byId = id => TABS.find(t => t.id === id);

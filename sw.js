@@ -23,9 +23,32 @@ const SHELL = [
   './js/mod/projects.js',
   './js/mod/learning.js',
   './js/mod/ai.js',
+  './js/mod/review.js',
+  './js/mod/settings.js',
   './js/ai/context.js',
   './js/ai/brain.js'
 ];
+
+// Notifications sent by the scheduled job. Clicking one opens the app.
+self.addEventListener('push', event => {
+  let payload = {};
+  try { payload = event.data ? event.data.json() : {}; } catch {}
+  const n = payload.notification || payload;
+  event.waitUntil(self.registration.showNotification(n.title || 'Life OS', {
+    body: n.body || '',
+    icon: './icons/icon-192.png',
+    badge: './icons/icon-192.png',
+    data: { url: './index.html' }
+  }));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(clients.matchAll({ type: 'window' }).then(list => {
+    for (const c of list) if ('focus' in c) return c.focus();
+    return clients.openWindow('./index.html');
+  }));
+});
 
 self.addEventListener('install', event => {
   self.skipWaiting();
