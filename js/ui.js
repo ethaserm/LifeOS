@@ -66,6 +66,70 @@ export function ring(value, goal, label = '') {
   return { el: wrap, set: apply, setLabel: t => { lab.textContent = t; } };
 }
 
+// Minimal line chart. `points` = [{x:'label', y:number}]. No axes, no gridlines —
+// just the line, a soft fill, and end labels. Handles 0/1 points without throwing.
+export function sparkline(points, { height = 64 } = {}) {
+  const W = 300, H = height, PAD = 6;
+  if (!points || points.length < 2) {
+    return h('p', { class: 'empty' }, points && points.length === 1
+      ? 'One entry so far — a line needs a second.' : 'Nothing logged yet.');
+  }
+  const ys = points.map(p => p.y);
+  const lo = Math.min(...ys), hi = Math.max(...ys);
+  const span = hi - lo || 1;
+  const stepX = (W - PAD * 2) / (points.length - 1);
+  const coords = points.map((p, i) => {
+    const x = PAD + i * stepX;
+    const y = H - PAD - ((p.y - lo) / span) * (H - PAD * 2);
+    return [x, y];
+  });
+  const line = coords.map(c => c.join(',')).join(' ');
+  const fill = `${PAD},${H - PAD} ${line} ${W - PAD},${H - PAD}`;
+
+  const wrap = h('div', {});
+  wrap.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px;display:block" preserveAspectRatio="none">
+      <polygon points="${fill}" fill="var(--accent-soft)"></polygon>
+      <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round"></polyline>
+    </svg>
+    <div class="row" style="justify-content:space-between;margin-top:4px">
+      <span class="l" style="font-size:11.5px">${points[0].x}</span>
+      <span class="l" style="font-size:11.5px">${points[points.length - 1].x}</span>
+    </div>`;
+  return wrap;
+}
+
+// Tap-to-edit number, used for things like the pushup goal. Click the label,
+// get an inline input, Enter/blur commits, Escape cancels.
+export function editableNumber(value, { onCommit, prefix = '', suffix = '' }) {
+  const label = h('span', { class: 'edit-num', tabindex: '0', role: 'button' }, `${prefix}${value}${suffix} ✎`);
+  label.style.cursor = 'pointer';
+  const start = () => {
+    const input = h('input', {
+      type: 'number', value, inputmode: 'numeric',
+      style: 'width:64px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;'
+    });
+    label.replaceWith(input);
+    input.focus();
+    input.select();
+    const commit = () => {
+      const n = parseInt(input.value, 10);
+      const el = editableNumber(Number.isFinite(n) && n > 0 ? n : value, { onCommit, prefix, suffix });
+      input.replaceWith(el);
+      if (Number.isFinite(n) && n > 0 && n !== value) onCommit(n);
+    };
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') input.blur();
+      if (e.key === 'Escape') { input.value = value; input.blur(); }
+    });
+  };
+  label.addEventListener('click', start);
+  label.addEventListener('keydown', e => { if (e.key === 'Enter') start(); });
+  return label;
+}
+
 export function toast(msg) {
   const t = h('div', { class: 'toast' }, msg);
   Object.assign(t.style, {

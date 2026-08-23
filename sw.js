@@ -14,7 +14,9 @@ const SHELL = [
   './js/store.js',
   './js/auth.js',
   './js/ui.js',
-  './js/mod/today.js'
+  './js/tasks.js',
+  './js/mod/today.js',
+  './js/mod/body.js'
 ];
 
 self.addEventListener('install', event => {
