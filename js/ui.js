@@ -155,6 +155,45 @@ export function editableText(value, { onCommit, cls = '' } = {}) {
   return label;
 }
 
+// Donut chart, single accent colour at varying opacity per segment — keeps the
+// one-accent-per-tab rule instead of pulling in a second colour family.
+const DONUT_OPACITY = [1, 0.78, 0.6, 0.46, 0.34, 0.24, 0.16];
+
+export function donut(segments, { size = 140, thickness = 16 } = {}) {
+  const total = segments.reduce((s, x) => s + x.value, 0);
+  const wrap = h('div', { class: 'row', style: 'gap:20px;align-items:center;flex-wrap:wrap' });
+  if (total <= 0) { wrap.append(h('p', { class: 'empty' }, 'Nothing this month yet.')); return wrap; }
+
+  const sorted = segments.filter(s => s.value > 0).sort((a, b) => b.value - a.value);
+  const r = (size - thickness) / 2;
+  const C = 2 * Math.PI * r;
+  let offset = 0;
+
+  const arcs = sorted.map((s, i) => {
+    const frac = s.value / total;
+    const len = frac * C;
+    const el = `<circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--accent)"
+      stroke-width="${thickness}" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-offset}"
+      opacity="${DONUT_OPACITY[i % DONUT_OPACITY.length]}" stroke-linecap="butt"></circle>`;
+    offset += len;
+    return el;
+  }).join('');
+
+  const svgHost = h('div', {});
+  svgHost.innerHTML = `<svg viewBox="0 0 ${size} ${size}" style="width:${size}px;height:${size}px;transform:rotate(-90deg)">${arcs}</svg>`;
+
+  const legend = h('div', { style: 'flex:1;min-width:140px' });
+  sorted.forEach((s, i) => {
+    legend.append(h('div', { class: 'row', style: 'gap:8px;padding:3px 0' },
+      h('span', { style: `width:10px;height:10px;border-radius:3px;background:var(--accent);opacity:${DONUT_OPACITY[i % DONUT_OPACITY.length]};flex:none` }),
+      h('span', {}, s.label), h('span', { class: 'spacer' }),
+      h('span', { class: 'l' }, s.display || String(s.value))));
+  });
+
+  wrap.append(svgHost, legend);
+  return wrap;
+}
+
 export function toast(msg) {
   const t = h('div', { class: 'toast' }, msg);
   Object.assign(t.style, {
