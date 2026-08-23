@@ -28,8 +28,8 @@ const TABS = [
   { id: 'habits',   name: 'Habits',   pinned: true,  load: () => import('./mod/habits.js') },
   { id: 'money',    name: 'Money',    pinned: true,  load: () => import('./mod/money.js') },
   { id: 'mind',     name: 'Mind',     load: () => import('./mod/mind.js') },
-  { id: 'projects', name: 'Projects', phase: 'P4' },
-  { id: 'learning', name: 'Learning', phase: 'P4' },
+  { id: 'projects', name: 'Projects', load: () => import('./mod/projects.js') },
+  { id: 'learning', name: 'Learning', load: () => import('./mod/learning.js') },
   { id: 'ai',       name: 'AI',       phase: 'P5' },
   { id: 'settings', name: 'Settings', phase: 'P6' }
 ];

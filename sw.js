@@ -19,7 +19,9 @@ const SHELL = [
   './js/mod/body.js',
   './js/mod/habits.js',
   './js/mod/mind.js',
-  './js/mod/money.js'
+  './js/mod/money.js',
+  './js/mod/projects.js',
+  './js/mod/learning.js'
 ];
 
 self.addEventListener('install', event => {
