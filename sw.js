@@ -21,7 +21,10 @@ const SHELL = [
   './js/mod/mind.js',
   './js/mod/money.js',
   './js/mod/projects.js',
-  './js/mod/learning.js'
+  './js/mod/learning.js',
+  './js/mod/ai.js',
+  './js/ai/context.js',
+  './js/ai/brain.js'
 ];
 
 self.addEventListener('install', event => {
