@@ -25,7 +25,7 @@ const icon = name => `<svg class="ico" viewBox="0 0 24 24" width="22" height="22
 const TABS = [
   { id: 'today',    name: 'Today',    pinned: true,  load: () => import('./mod/today.js') },
   { id: 'body',     name: 'Body',     pinned: true,  load: () => import('./mod/body.js') },
-  { id: 'habits',   name: 'Habits',   pinned: true,  phase: 'P2' },
+  { id: 'habits',   name: 'Habits',   pinned: true,  load: () => import('./mod/habits.js') },
   { id: 'money',    name: 'Money',    pinned: true,  phase: 'P3' },
   { id: 'mind',     name: 'Mind',     phase: 'P3' },
   { id: 'projects', name: 'Projects', phase: 'P4' },

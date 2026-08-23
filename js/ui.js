@@ -130,6 +130,31 @@ export function editableNumber(value, { onCommit, prefix = '', suffix = '' }) {
   return label;
 }
 
+// Same idea as editableNumber but for short text — habit names, project tags.
+export function editableText(value, { onCommit, cls = '' } = {}) {
+  const label = h('span', { class: cls, tabindex: '0', role: 'button', style: 'cursor:pointer' }, value || '(untitled)');
+  const start = () => {
+    const input = h('input', { type: 'text', value, style: 'width:160px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;' });
+    label.replaceWith(input);
+    input.focus();
+    input.select();
+    const commit = () => {
+      const v = input.value.trim();
+      const el = editableText(v || value, { onCommit, cls });
+      input.replaceWith(el);
+      if (v && v !== value) onCommit(v);
+    };
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') input.blur();
+      if (e.key === 'Escape') { input.value = value; input.blur(); }
+    });
+  };
+  label.addEventListener('click', start);
+  label.addEventListener('keydown', e => { if (e.key === 'Enter') start(); });
+  return label;
+}
+
 export function toast(msg) {
   const t = h('div', { class: 'toast' }, msg);
   Object.assign(t.style, {
