@@ -108,7 +108,7 @@ export function editableNumber(value, { onCommit, prefix = '', suffix = '' }) {
   const start = () => {
     const input = h('input', {
       type: 'number', value, inputmode: 'numeric',
-      style: 'width:64px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;'
+      style: 'width:64px;height:32px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;'
     });
     label.replaceWith(input);
     input.focus();
@@ -134,7 +134,7 @@ export function editableNumber(value, { onCommit, prefix = '', suffix = '' }) {
 export function editableText(value, { onCommit, cls = '' } = {}) {
   const label = h('span', { class: cls, tabindex: '0', role: 'button', style: 'cursor:pointer' }, value || '(untitled)');
   const start = () => {
-    const input = h('input', { type: 'text', value, style: 'width:160px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;' });
+    const input = h('input', { type: 'text', value, style: 'width:160px;height:32px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;' });
     label.replaceWith(input);
     input.focus();
     input.select();

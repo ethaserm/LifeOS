@@ -43,7 +43,7 @@ export async function render(mount, { store }) {
     );
 
     if (status.local.ok && status.local.models?.length > 1) {
-      const sel = h('select', { style: 'margin-top:10px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--card)' });
+      const sel = h('select', { style: 'margin-top:10px;width:220px' });
       status.local.models.forEach(m => {
         const opt = h('option', { value: m }, m);
         if (m === brain.localModel()) opt.selected = true;

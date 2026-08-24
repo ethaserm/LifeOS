@@ -64,7 +64,7 @@ export async function render(mount, { store }) {
     const d = doc(store);
 
     const title = h('input', { type: 'text', placeholder: 'Title', style: 'flex:1;min-width:140px' });
-    const kind = h('select', { style: 'padding:9px;border:1px solid var(--line);border-radius:12px;background:var(--card)' },
+    const kind = h('select', { style: 'width:160px' },
       h('option', { value: 'book' }, 'Book'), h('option', { value: 'course' }, 'Course'));
     const total = h('input', { type: 'number', min: '1', placeholder: 'pages/lessons', style: 'width:130px' });
 

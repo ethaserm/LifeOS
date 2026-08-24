@@ -40,7 +40,7 @@ export async function render(mount, { store }) {
     const d = doc(store);
 
     const amount = h('input', { type: 'number', step: '0.01', min: '0', placeholder: '0.00', style: 'width:110px' });
-    const category = h('select', { style: 'padding:9px;border:1px solid var(--line);border-radius:12px;background:var(--card)' });
+    const category = h('select', { style: 'width:160px' });
     d.categories.forEach(c => category.append(h('option', { value: c }, c)));
     const note = h('input', { type: 'text', placeholder: 'Note (optional)', style: 'flex:1;min-width:130px' });
     const date = h('input', { type: 'date', value: dayKey() });

@@ -94,7 +94,7 @@ export async function render(mount, { store }) {
     const open = tasks.all(store).filter(t => !t.done && t.project);
 
     const text = h('input', { type: 'text', placeholder: 'Task…', style: 'flex:1;min-width:140px' });
-    const proj = h('select', { style: 'padding:9px;border:1px solid var(--line);border-radius:12px;background:var(--card)' });
+    const proj = h('select', { style: 'width:160px' });
     d.list.forEach(p => proj.append(h('option', { value: p }, p)));
     const addNow = () => {
       const v = text.value.trim();
