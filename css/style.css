@@ -388,6 +388,7 @@ input[style*="width"], textarea[style*="width"], select[style*="width"] { width:
   padding: 7px 4px calc(7px + var(--safe-b));
 }
 #tabbar .tab {
+  position: relative; z-index: 1;
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
   padding: 5px 2px; color: var(--faint); font-size: 10px; font-weight: 600;
   transition: color .15s ease;
@@ -499,6 +500,67 @@ input[style*="width"], textarea[style*="width"], select[style*="width"] { width:
 @media (min-width: 1500px) {
   #view { max-width: 1440px; }
 }
+
+/* ---------- motion ----------
+   Every entrance uses the same curve (a slight overshoot-free ease-out) and
+   lands under 400ms — long enough to read as deliberate, short enough that
+   it never makes the app feel like it's waiting on itself. */
+
+/* Descendant selector, not a child combinator: some tabs wrap a full-width
+   card in .span for the 2-column grid (.cols > .span > .hero), which a
+   direct-child selector missed entirely — those cards never got the
+   animation-name at all. Stagger delay is assigned inline by app.js after
+   render, in document order, which is immune to nesting depth in a way no
+   nth-child selector list can be kept in sync with. */
+#view.entering .card,
+#view.entering .hero {
+  animation: rise .38s cubic-bezier(.16,1,.3,1) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#view-title, #view-sub { animation: rise .32s cubic-bezier(.16,1,.3,1) both; }
+
+/* Sliding highlight behind the active dock tab, instead of just a colour
+   swap — measured and positioned in app.js, this only owns the motion. */
+.tab-indicator {
+  position: absolute; top: 6px; bottom: 6px; z-index: -1;
+  background: var(--card-soft); border-radius: 12px;
+  transition: transform .32s cubic-bezier(.16,1,.3,1), width .32s cubic-bezier(.16,1,.3,1);
+}
+
+/* More sheet: slide up + fade, both directions, not just an instant swap. */
+#sheet-scrim {
+  opacity: 0; transition: opacity .22s ease;
+}
+#sheet-scrim.show { opacity: 1; }
+#sheet {
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.16,1,.3,1);
+}
+#sheet.show { transform: translateY(0); }
+@media (min-width: 900px) {
+  #sheet { transform: translate(-50%, 100%); }
+  #sheet.show { transform: translate(-50%, 0); }
+}
+
+/* Checkbox check gets a pop, not an instant fill. */
+input[type="checkbox"]:checked::after { animation: pop .22s cubic-bezier(.34,1.56,.64,1); }
+@keyframes pop { from { transform: rotate(45deg) translate(-0.5px, -1px) scale(0); } }
+
+.toast {
+  position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%);
+  background: var(--shell); color: var(--text); border: 1px solid var(--line);
+  padding: 10px 16px; border-radius: 12px; font-size: 13.5px; z-index: 60;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn .22s cubic-bezier(.16,1,.3,1);
+  transition: opacity .2s ease;
+}
+.toast.out { opacity: 0; }
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 8px); } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }

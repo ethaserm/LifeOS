@@ -36,6 +36,29 @@ export function h(tag, attrs = {}, ...kids) {
   return node;
 }
 
+// Counts a number up (or down) to its new value instead of snapping — used
+// wherever a stat changes in place (ring, tile, stat). Re-reads whatever is
+// currently on screen as the start point, so a fast double-tap self-corrects
+// instead of restarting from the pre-first-tap value.
+export function animateNumber(el, to, { duration = 380, from } = {}) {
+  const start = from ?? (parseFloat(el.textContent) || 0);
+  cancelAnimationFrame(el._numRaf);
+  clearTimeout(el._numFallback);
+  if (start === to) { el.textContent = String(to); return; }
+  const t0 = performance.now();
+  const ease = t => 1 - (1 - t) ** 3;
+  const step = now => {
+    const t = Math.min(1, (now - t0) / duration);
+    el.textContent = String(Math.round(start + (to - start) * ease(t)));
+    if (t < 1) el._numRaf = requestAnimationFrame(step);
+  };
+  el._numRaf = requestAnimationFrame(step);
+  // A backgrounded/suspended tab (iOS PWA switched away from) can throttle
+  // rAF to near-never — this guarantees the number still lands on the real
+  // value instead of staying stuck at the old one.
+  el._numFallback = setTimeout(() => { el.textContent = String(to); }, duration + 150);
+}
+
 export const card = (label, ...kids) =>
   h('div', { class: 'card' }, label ? h('div', { class: 'card-label' }, label) : null, ...kids);
 
@@ -99,9 +122,11 @@ export function ring(value, goal, label = '') {
   const apply = (v, g) => {
     const pct = g > 0 ? Math.min(1, v / g) : 0;
     fill.setAttribute('stroke-dashoffset', String(C * (1 - pct)));
-    num.textContent = String(v);
+    animateNumber(num, v);
   };
-  requestAnimationFrame(() => apply(value, goal));
+  num.textContent = String(value);
+  fill.getBoundingClientRect(); // force layout so the fill-in transition has a from-state to animate from
+  apply(value, goal);
 
   return { el: wrap, set: apply, setLabel: t => { lab.textContent = t; } };
 }
@@ -236,13 +261,9 @@ export function donut(segments, { size = 140, thickness = 16 } = {}) {
 
 export function toast(msg) {
   const t = h('div', { class: 'toast' }, msg);
-  Object.assign(t.style, {
-    position: 'fixed', left: '50%', bottom: '92px', transform: 'translateX(-50%)',
-    background: '#111114', color: '#fff', padding: '10px 16px', borderRadius: '12px',
-    fontSize: '13.5px', zIndex: 60, boxShadow: '0 8px 30px rgba(0,0,0,.25)', opacity: '0',
-    transition: 'opacity .18s ease'
-  });
   document.body.append(t);
-  requestAnimationFrame(() => { t.style.opacity = '1'; });
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 250); }, 1900);
+  setTimeout(() => {
+    t.classList.add('out');
+    setTimeout(() => t.remove(), 250);
+  }, 1900);
 }

@@ -134,12 +134,38 @@ function markActive(id) {
   document.querySelectorAll('[data-nav]').forEach(el => {
     el.classList.toggle('active', el.getAttribute('data-nav') === id);
   });
+  moveIndicator(id);
 }
+
+// Sliding highlight behind the active dock tab. "More" lights up for any tab
+// that lives in the sheet rather than the bar itself, so the dock never shows
+// nothing selected.
+let indicatorEl = null;
+function moveIndicator(id) {
+  const bar = document.getElementById('tabbar');
+  if (!indicatorEl) {
+    indicatorEl = h('div', { class: 'tab-indicator' });
+    bar.appendChild(indicatorEl);
+  }
+  const tab = byId(id);
+  const btn = bar.querySelector(tab?.pinned ? `[data-nav="${id}"]` : '#more-btn');
+  if (!btn) return;
+  indicatorEl.style.transform = `translateX(${btn.offsetLeft}px)`;
+  indicatorEl.style.width = `${btn.offsetWidth}px`;
+}
+window.addEventListener('resize', () => { if (active) moveIndicator(active); });
 
 const sheet = document.getElementById('sheet');
 const scrim = document.getElementById('sheet-scrim');
-function openSheet() { sheet.hidden = false; scrim.hidden = false; }
-function closeSheet() { sheet.hidden = true; scrim.hidden = true; }
+function openSheet() {
+  sheet.hidden = false; scrim.hidden = false;
+  sheet.offsetHeight; // force layout so the browser registers the pre-show state before it transitions
+  sheet.classList.add('show'); scrim.classList.add('show');
+}
+function closeSheet() {
+  sheet.classList.remove('show'); scrim.classList.remove('show');
+  setTimeout(() => { sheet.hidden = true; scrim.hidden = true; }, 320);
+}
 scrim.addEventListener('click', closeSheet);
 
 // ---------- routing ----------
@@ -158,6 +184,7 @@ async function go(id) {
   subEl.textContent = tab.id === 'today' ? prettyDate() : '';
   markActive(tab.id);
   view.innerHTML = '';
+  view.classList.add('entering');
 
   if (tab.load) {
     const mod = await tab.load();
@@ -165,7 +192,17 @@ async function go(id) {
   } else {
     view.append(placeholder(tab));
   }
+  staggerEntrance();
   view.focus({ preventScroll: true });
+}
+
+// Staggers each top-level card's entrance by document order, in JS rather
+// than CSS nth-child — a card wrapped in a layout div (e.g. .span for a
+// full-width grid item) still gets counted correctly, where a CSS selector
+// tied to a specific nesting depth silently misses it.
+function staggerEntrance() {
+  const cards = view.querySelectorAll('.card, .hero');
+  cards.forEach((el, i) => { el.style.animationDelay = `${Math.min(i, 5) * 35}ms`; });
 }
 
 function placeholder(tab) {
