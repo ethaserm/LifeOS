@@ -1,9 +1,13 @@
 // Service worker: makes the app installable and keeps it opening offline.
 //
-// Deliberately NETWORK-FIRST. A cache-first worker means edits don't show up
-// until the cache is manually cleared — that exact trap cost hours on JARVIS.
+// Deliberately NETWORK-FIRST, and cache:'no-store' on that fetch specifically.
+// A plain fetch() still honours GitHub Pages' Cache-Control: max-age=600 header,
+// so "network-first" silently became "browser-disk-cache-first" for 10 minutes
+// after every deploy — a real edit sat invisible despite a hard refresh, since
+// Chrome can serve a fresh-looking disk hit without a network round trip at all.
+// no-store forces an actual request every time.
 
-const CACHE = 'lifeos-v1';
+const CACHE = 'lifeos-v2';
 
 const SHELL = [
   './',
@@ -72,7 +76,7 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    fetch(request)
+    fetch(request, { cache: 'no-store' })
       .then(res => {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(request, copy)).catch(() => {});
