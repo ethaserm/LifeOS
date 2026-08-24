@@ -417,14 +417,30 @@ input[style*="width"], textarea[style*="width"], select[style*="width"] { width:
 /* ---------- desktop ---------- */
 
 @media (min-width: 900px) {
-  #tabbar { display: none; }
-
-  #sidebar {
-    display: flex; flex-direction: column; gap: 3px;
-    width: var(--sidebar-w); flex: none;
-    padding: 22px 14px; border-right: 1px solid var(--line);
-    position: sticky; top: 0; height: 100vh; background: var(--shell);
+  /* Tabs stay at the bottom at every width — Ethan's call, he prefers a
+     bottom bar over a sidebar even on a wide monitor. #sidebar and its
+     children below are kept (unused, display:none from the base rule)
+     rather than deleted, in case that preference flips back.
+     Capped and centred as a dock rather than left full-width: five items
+     stretched edge to edge across a 1920px monitor would leave each one
+     stranded with huge dead space around it. */
+  #tabbar {
+    left: 50%; right: auto; transform: translateX(-50%);
+    max-width: 640px; width: calc(100% - 48px);
+    border: 1px solid var(--line); border-radius: 18px 18px 0 0; border-bottom: none;
+    bottom: 0;
   }
+  #tabbar .tab { font-size: 11px; }
+  #tabbar .tab .ico { font-size: 21px; }
+
+  #sheet {
+    left: 50%; right: auto; transform: translateX(-50%);
+    max-width: 640px; width: calc(100% - 48px);
+    border: 1px solid var(--line); border-radius: 18px 18px 0 0; border-bottom: none;
+    padding-bottom: 24px;
+  }
+  .sheet-items { grid-template-columns: 1fr 1fr 1fr; }
+
   .brand { display: flex; align-items: center; gap: 11px; padding: 6px 8px 22px; }
   .brand-mark {
     width: 30px; height: 30px; border-radius: 9px;
@@ -469,7 +485,7 @@ input[style*="width"], textarea[style*="width"], select[style*="width"] { width:
   .side-goal .val { font-family: var(--font-ui); font-size: 14.5px; font-weight: 600; color: var(--text); }
 
   #top { padding: 34px 40px 16px; }
-  #view { padding: 6px 40px 64px; }
+  #view { padding: 6px 40px calc(104px + var(--safe-b)); }
   #view-title { font-size: 32px; }
 
   .cols {
