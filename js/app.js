@@ -3,24 +3,7 @@
 import { initAuth, signIn, signOutNow, currentUser } from './auth.js';
 import * as store from './store.js';
 import { h, prettyDate } from './ui.js';
-
-const ICONS = {
-  today:    '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>',
-  body:     '<path d="M4 9v6M20 9v6M7 6.5v11M17 6.5v11M7 12h10"/>',
-  habits:   '<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M8 12.4l2.7 2.7L16 9.8"/>',
-  mind:     '<path d="M20 14.2A8.5 8.5 0 0 1 9.8 4 8.5 8.5 0 1 0 20 14.2z"/>',
-  money:    '<circle cx="12" cy="12" r="8.5"/><path d="M14 9.2c-2.4-1.4-4.3 0-4.3 2.1V16M9.2 12.6h3.6M8.8 16h6.4"/>',
-  projects: '<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/>',
-  learning: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/>',
-  ai:       '<path d="M12 3.5l1.85 5.15L19 10.5l-5.15 1.85L12 17.5l-1.85-5.15L5 10.5l5.15-1.85z"/><path d="M18 16l.8 2.2L21 19l-2.2.8L18 22l-.8-2.2L15 19l2.2-.8z"/>',
-  review:   '<path d="M4 19V6.5A2.5 2.5 0 0 1 6.5 4H18a2 2 0 0 1 2 2v14H6.5A2.5 2.5 0 0 1 4 19z"/><path d="M8 9h8M8 13h5"/>',
-  settings: '<path d="M4 7h9M19 7h1M4 17h5M15 17h5"/><circle cx="16" cy="7" r="2.4"/><circle cx="12" cy="17" r="2.4"/>',
-  more:     '<circle cx="5.5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18.5" cy="12" r="1.7"/>'
-};
-
-const icon = name => `<svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none"
-  stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
-  aria-hidden="true">${ICONS[name] || ''}</svg>`;
+import { icon } from './icons.js';
 
 // Single source of truth for navigation. `phase` marks what isn't built yet.
 const TABS = [

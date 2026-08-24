@@ -7,7 +7,8 @@
 //
 // Hours come from the focus doc's sessions, tagged by project.
 
-import { h, card, dayKey, addDays, toast } from '../ui.js';
+import { h, card, dayKey, addDays, toast, hero,
+         tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 import * as tasks from '../tasks.js';
 
 const DOC = 'projects';
@@ -60,7 +61,7 @@ export async function render(mount, { store }) {
     }
     const max = rows[0][1];
     rows.forEach(([name, m]) => {
-      hoursHost.append(h('div', { style: 'padding:8px 0;border-top:1px solid var(--line)' },
+      hoursHost.append(h('div', { class: 'list-row', style: 'display:block' },
         h('div', { class: 'row' }, h('span', {}, name), h('span', { class: 'spacer' }), h('strong', {}, fmtMins(m))),
         h('div', { style: 'margin-top:5px;height:6px;border-radius:999px;background:var(--accent-soft);overflow:hidden' },
           h('div', { style: `height:100%;width:${Math.round((m / max) * 100)}%;background:var(--accent)` }))));
@@ -76,7 +77,7 @@ export async function render(mount, { store }) {
       return;
     }
     d.roblox.slice(0, 12).forEach(g => {
-      robloxHost.append(h('div', { class: 'row', style: 'padding:8px 0;border-top:1px solid var(--line);gap:10px' },
+      robloxHost.append(h('div', { class: 'list-row' },
         h('span', {}, g.name),
         h('span', { class: 'spacer' }),
         h('span', { class: 'l' }, `${g.sizeMb} MB`),
@@ -108,13 +109,13 @@ export async function render(mount, { store }) {
     todoHost.append(h('div', { class: 'row wrap', style: 'gap:8px;margin-bottom:12px' },
       text, proj, h('button', { class: 'btn primary', type: 'button', onclick: addNow }, 'Add')));
 
-    if (!open.length) { todoHost.append(h('p', { class: 'empty' }, 'No project tasks open.')); return; }
+    if (!open.length) { todoHost.append(emptyState('check', 'No project tasks open.')); return; }
 
     d.list.forEach(p => {
       const mine = open.filter(t => t.project === p);
       if (!mine.length) return;
       todoHost.append(h('p', { class: 'l', style: 'margin:10px 0 4px' }, p));
-      mine.forEach(t => todoHost.append(h('div', { class: 'row', style: 'padding:6px 0;border-top:1px solid var(--line);gap:10px' },
+      mine.forEach(t => todoHost.append(h('div', { class: 'list-row' },
         h('input', { type: 'checkbox', onchange: () => { tasks.toggle(store, t.id); paintTodos(); } }),
         h('span', {}, t.text),
         t.due ? h('span', { class: 'l' }, `· due ${t.due.slice(5)}`) : null,
@@ -142,9 +143,9 @@ export async function render(mount, { store }) {
     watchedHost.append(h('div', { class: 'row wrap', style: 'gap:8px;margin-bottom:12px' },
       title, channel, h('button', { class: 'btn primary', type: 'button', onclick: addNow }, 'Add')));
 
-    if (!list.length) { watchedHost.append(h('p', { class: 'empty' }, 'Nothing logged yet.')); return; }
+    if (!list.length) { watchedHost.append(emptyState('film', 'Nothing logged yet.')); return; }
     list.slice(0, 20).forEach(v => {
-      watchedHost.append(h('div', { class: 'row', style: 'padding:7px 0;border-top:1px solid var(--line);gap:10px' },
+      watchedHost.append(h('div', { class: 'list-row' },
         h('span', { class: 'l', style: 'width:52px' }, v.date.slice(5)),
         h('span', {}, v.title),
         v.channel ? h('span', { class: 'l' }, `· ${v.channel}`) : null,

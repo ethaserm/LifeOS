@@ -1,6 +1,6 @@
 // AI tab — ask questions about your own tracked data.
 
-import { h, card, toast } from '../ui.js';
+import { h, card, toast, hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 import { buildContext, contextSize } from '../ai/context.js';
 import * as brain from '../ai/brain.js';
 
@@ -29,7 +29,7 @@ export async function render(mount, { store }) {
     const status = await brain.probe();
     statusHost.innerHTML = '';
 
-    const line = (label, state, reason) => h('div', { style: 'padding:7px 0;border-top:1px solid var(--line)' },
+    const line = (label, state, reason) => h('div', { class: 'list-row', style: 'display:block' },
       h('div', { class: 'row', style: 'gap:8px' },
         h('span', { style: `width:8px;height:8px;border-radius:50%;background:${state ? 'var(--accent)' : 'var(--line)'};flex:none` }),
         h('strong', {}, label),

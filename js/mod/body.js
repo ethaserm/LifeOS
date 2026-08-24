@@ -10,7 +10,8 @@
 //   missed         { "day-weekStartDate": { reason, date } }
 //   restNotes      { "day-rest-weekStartDate": "text" }
 
-import { h, card, ring, dayKey, addDays, sparkline, editableNumber, toast } from '../ui.js';
+import { h, card, ring, dayKey, addDays, sparkline, editableNumber,
+         toast, hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 
 const P = 'pushups_';
 
@@ -196,13 +197,13 @@ function renderWeight(mount, store) {
     card('Last 30 days', sparkline(entries.slice(-30).map(e => ({ x: e.date.slice(5), y: e.kg })))),
     card('Entries',
       recent.length
-        ? h('div', {}, ...recent.map(e => h('div', { class: 'row', style: 'padding:7px 0;border-top:1px solid var(--line)' },
+        ? h('div', {}, ...recent.map(e => h('div', { class: 'list-row' },
             h('span', {}, e.date), h('span', { class: 'spacer' }), h('span', {}, `${e.kg} kg`),
             h('button', {
               class: 'btn ghost', type: 'button', style: 'padding:4px 10px',
               onclick: () => { if (confirm(`Delete the ${e.date} entry?`)) store.update('weightLog', arr => (arr || []).filter(x => x.date !== e.date), []); }
             }, '×'))))
-        : h('p', { class: 'empty' }, 'No weight entries yet.')
+        : emptyState('scale', 'No weight entries yet.')
     )
   );
 }
@@ -268,7 +269,7 @@ function renderLog(mount, store) {
   function paintList() {
     listHost.innerHTML = '';
     const list = sessions();
-    if (!list.length) { listHost.append(h('p', { class: 'empty' }, 'No sessions logged yet.')); return; }
+    if (!list.length) { listHost.append(emptyState('body', 'No sessions logged yet.')); return; }
     for (const s of list) {
       const setCount = s.exercises.reduce((n, ex) => n + ex.sets.length, 0);
       const isPR = s.exercises.some(ex => ex.sets.some(set => {
@@ -334,11 +335,11 @@ function renderPRs(mount, store) {
 
   mount.append(card('Personal bests',
     rows.length
-      ? h('div', {}, ...rows.map(([name, pb]) => h('div', { class: 'row', style: 'padding:8px 0;border-top:1px solid var(--line)' },
+      ? h('div', {}, ...rows.map(([name, pb]) => h('div', { class: 'list-row' },
           h('span', {}, name), h('span', { class: 'spacer' }),
           h('span', { class: 'mono' }, `${pb.kg}kg × ${pb.reps}`),
           h('span', { class: 'l', style: 'width:84px;text-align:right' }, pb.date))))
-      : h('p', { class: 'empty' }, 'No personal bests yet — log a session to start one.')
+      : emptyState('trophy', 'No personal bests yet. Log a session to start one.')
   ));
 }
 

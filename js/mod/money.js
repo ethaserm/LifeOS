@@ -6,7 +6,8 @@
 // moment you sum them (0.1 + 0.2 !== 0.3), and a money tracker that drifts by a
 // penny a month is worse than useless.
 
-import { h, card, dayKey, donut, toast } from '../ui.js';
+import { h, card, hero, bigStat, tile, tiles, list, listRow, emptyState,
+         dayKey, donut, toast, iconEl } from '../ui.js';
 
 const DOC = 'money';
 const DEFAULT_CATEGORIES = ['Food', 'Transport', 'Games', 'Subscriptions', 'Clothes', 'Other'];
@@ -22,28 +23,56 @@ const money = p => `£${(p / 100).toFixed(2)}`;
 const monthOf = date => date.slice(0, 7);
 
 export async function render(mount, { store }) {
+  const heroHost = hero('This month');
   const addHost = h('div', {});
-  const summaryHost = h('div', {});
+  const breakdownHost = h('div', {});
   const listHost = h('div', {});
 
-  mount.append(
+  const cols = h('div', { class: 'cols' },
+    h('div', { class: 'span' }, heroHost),
     card('Add spend', addHost),
-    card('This month', summaryHost),
-    card('Recent', listHost)
+    card('By category', breakdownHost),
+    h('div', { class: 'span' }, card('Recent', listHost))
   );
+  mount.append(cols);
 
   paint();
-  function paint() { paintAdd(); paintSummary(); paintList(); }
+  function paint() { paintHero(); paintAdd(); paintBreakdown(); paintList(); }
+
+  function monthEntries() {
+    return doc(store).entries.filter(e => monthOf(e.date) === monthOf(dayKey()));
+  }
+
+  function paintHero() {
+    heroHost.querySelectorAll(':scope > *:not(.card-label)').forEach(n => n.remove());
+    const entries = monthEntries();
+    const total = entries.reduce((s, e) => s + e.amount, 0);
+    const days = new Date().getDate();
+    const biggest = entries.slice().sort((a, b) => b.amount - a.amount)[0];
+
+    heroHost.append(
+      h('div', { class: 'row wrap', style: 'gap:36px;align-items:flex-end' },
+        bigStat(money(total), `across ${entries.length} ${entries.length === 1 ? 'purchase' : 'purchases'}`),
+        h('div', {},
+          h('div', { class: 'big sm' }, money(Math.round(total / days))),
+          h('div', { class: 'sub' }, 'a day so far')),
+        biggest
+          ? h('div', {},
+              h('div', { class: 'big sm' }, money(biggest.amount)),
+              h('div', { class: 'sub' }, `biggest · ${biggest.category}`))
+          : null)
+    );
+  }
 
   function paintAdd() {
     addHost.innerHTML = '';
     const d = doc(store);
 
-    const amount = h('input', { type: 'number', step: '0.01', min: '0', placeholder: '0.00', style: 'width:110px' });
-    const category = h('select', { style: 'width:160px' });
+    const amount = h('input', { type: 'number', step: '0.01', min: '0', placeholder: '0.00', style: 'width:118px' });
+    const category = h('select', { style: 'width:150px' });
     d.categories.forEach(c => category.append(h('option', { value: c }, c)));
-    const note = h('input', { type: 'text', placeholder: 'Note (optional)', style: 'flex:1;min-width:130px' });
-    const date = h('input', { type: 'date', value: dayKey() });
+    const note = h('input', { type: 'text', placeholder: 'Note (optional)', style: 'flex:1;min-width:140px' });
+    const date = h('input', { type: 'date', value: dayKey(), style: 'width:158px' });
 
     const addNow = () => {
       const p = pence(amount.value);
@@ -65,53 +94,54 @@ export async function render(mount, { store }) {
 
     addHost.append(
       h('div', { class: 'row wrap', style: 'gap:10px' },
-        h('span', { style: 'font-size:19px;font-weight:600' }, '£'), amount, category, note, date,
-        h('button', { class: 'btn primary', type: 'button', onclick: addNow }, 'Add'))
+        h('span', { class: 'num', style: 'font-size:20px;font-weight:600;color:var(--muted)' }, '£'),
+        amount, category),
+      h('div', { class: 'row wrap', style: 'gap:10px;margin-top:10px' },
+        note, date,
+        h('button', { class: 'btn primary', type: 'button', onclick: addNow }, iconEl('plus', 17), 'Add'))
     );
   }
 
-  function paintSummary() {
-    summaryHost.innerHTML = '';
-    const d = doc(store);
-    const thisMonth = monthOf(dayKey());
-    const entries = d.entries.filter(e => monthOf(e.date) === thisMonth);
-    const total = entries.reduce((s, e) => s + e.amount, 0);
-
+  function paintBreakdown() {
+    breakdownHost.innerHTML = '';
+    const entries = monthEntries();
+    if (!entries.length) {
+      breakdownHost.append(emptyState('money', 'Nothing logged this month yet.'));
+      return;
+    }
     const byCategory = {};
     entries.forEach(e => { byCategory[e.category] = (byCategory[e.category] || 0) + e.amount; });
-    const segments = Object.entries(byCategory).map(([label, value]) => ({ label, value, display: money(value) }));
-
-    const days = new Date().getDate();
-    summaryHost.append(
-      h('div', { class: 'row wrap', style: 'gap:24px;margin-bottom:16px' },
-        h('div', { class: 'stat' }, h('div', { class: 'n' }, money(total)), h('div', { class: 'l' }, 'spent this month')),
-        h('div', { class: 'stat' }, h('div', { class: 'n' }, money(Math.round(total / days))), h('div', { class: 'l' }, 'per day average'))),
-      donut(segments)
-    );
+    const segments = Object.entries(byCategory)
+      .sort((a, b) => b[1] - a[1])
+      .map(([label, value]) => ({ label, value, display: money(value) }));
+    breakdownHost.append(donut(segments));
   }
 
   function paintList() {
     listHost.innerHTML = '';
     const d = doc(store);
     const recent = d.entries.slice(0, 30);
-    if (!recent.length) { listHost.append(h('p', { class: 'empty' }, 'Nothing logged yet.')); return; }
+    if (!recent.length) {
+      listHost.append(emptyState('inbox', 'Purchases you log will show up here.'));
+      return;
+    }
 
-    recent.forEach(e => {
-      listHost.append(h('div', { class: 'row', style: 'padding:8px 0;border-top:1px solid var(--line);gap:10px' },
-        h('span', { style: 'width:82px' }, e.date.slice(5)),
-        h('span', {}, e.category),
-        e.note ? h('span', { class: 'l' }, `· ${e.note}`) : null,
-        h('span', { class: 'spacer' }),
-        h('strong', {}, money(e.amount)),
-        h('button', {
-          class: 'btn ghost', type: 'button', style: 'padding:3px 9px',
-          onclick: () => {
-            if (!confirm(`Delete ${money(e.amount)} — ${e.category}?`)) return;
-            store.update(DOC, cur => ({ ...cur, entries: cur.entries.filter(x => x.id !== e.id) }), d);
-            paint();
-          }
-        }, '×')));
-    });
+    const rows = recent.map(e => listRow(
+      h('span', { class: 'mono', style: 'width:52px;color:var(--muted)' }, e.date.slice(5)),
+      h('span', { class: 'name' }, e.category),
+      e.note ? h('span', { style: 'color:var(--muted);font-size:13px' }, e.note) : null,
+      h('span', { class: 'spacer' }),
+      h('span', { class: 'val' }, money(e.amount)),
+      h('button', {
+        class: 'btn ghost icon', type: 'button', title: 'Delete',
+        onclick: () => {
+          if (!confirm(`Delete ${money(e.amount)} — ${e.category}?`)) return;
+          store.update(DOC, cur => ({ ...cur, entries: cur.entries.filter(x => x.id !== e.id) }), d);
+          paint();
+        }
+      }, iconEl('trash', 15))
+    ));
+    listHost.append(list(...rows));
   }
 
   return store.onChange(DOC, paint);

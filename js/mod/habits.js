@@ -9,7 +9,8 @@
 // No streaks, no XP — per Ethan's "just the numbers", the ring only ever shows
 // a %-complete for today, and the grid below is a plain heatmap, not a badge system.
 
-import { h, card, ring, dayKey, sparkline, editableText, toast } from '../ui.js';
+import { h, card, hero, ring, tile, tiles, list, listRow, emptyState,
+         dayKey, sparkline, editableText, toast, iconEl } from '../ui.js';
 
 const SEED = ['Worked on a project', 'Shipped something', 'Learned something new'];
 
@@ -55,7 +56,13 @@ export async function render(mount, { store }) {
   const habitsHost = h('div', {});
   const focusHost = h('div', {});
   const screenHost = h('div', {});
-  mount.append(card('Habits', habitsHost), card('Focus', focusHost), card('Screen time', screenHost));
+  const heroHost = hero('Today');
+  mount.append(h('div', { class: 'cols' },
+    h('div', { class: 'span' }, heroHost),
+    card('Habits', habitsHost),
+    card('Focus', focusHost),
+    h('div', { class: 'span' }, card('Screen time', screenHost))
+  ));
 
   let tick = null;
 
@@ -88,8 +95,15 @@ export async function render(mount, { store }) {
     const addNow = () => { const v = addInput.value.trim(); if (v) { addHabit(store, v); addInput.value = ''; paintHabits(); } };
     addInput.addEventListener('keydown', e => { if (e.key === 'Enter') addNow(); });
 
+    heroHost.querySelectorAll(':scope > *:not(.card-label)').forEach(n => n.remove());
+    heroHost.append(h('div', { class: 'ring-wrap' },
+      r.el,
+      h('div', {},
+        h('div', { class: 'big sm' }, `${doneToday.length} of ${d.items.length}`),
+        h('div', { class: 'sub' }, doneToday.length === d.items.length && d.items.length
+          ? 'all done today' : 'habits ticked today'))));
+
     habitsHost.append(
-      h('div', { class: 'ring-wrap' }, r.el, h('div', { class: 'l' }, `${doneToday.length} of ${d.items.length} today`)),
       list,
       h('div', { class: 'row', style: 'gap:8px;margin-top:12px' }, addInput, h('button', { class: 'btn primary', type: 'button', onclick: addNow }, 'Add')),
       h('div', { style: 'margin-top:16px' }, heatmap(d))
@@ -186,7 +200,7 @@ export async function render(mount, { store }) {
     const all = store.get('screentime', {}) || {};
     const today = all[dayKey()];
     if (!today || !Object.keys(today).length) {
-      screenHost.append(h('p', { class: 'empty' }, 'Not connected yet — pairs with the Dynamic Island app on your PC.'));
+      screenHost.append(emptyState('monitor', 'Not connected yet. Pairs with the Dynamic Island app on your PC.'));
       return;
     }
     const rows = Object.entries(today).sort((a, b) => b[1] - a[1]).slice(0, 8);

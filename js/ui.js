@@ -1,5 +1,8 @@
 // Shared building blocks. Anything two modules would both need lives here.
 
+import { iconEl } from './icons.js';
+export { iconEl, icon } from './icons.js';
+
 // Local calendar date, NOT toISOString() — that's UTC and rolls the day over at
 // 1am British Summer Time. The old pushups.html has that bug; this doesn't.
 export function dayKey(d = new Date()) {
@@ -38,6 +41,43 @@ export const card = (label, ...kids) =>
 
 export const stat = (n, l) =>
   h('div', { class: 'stat' }, h('div', { class: 'n' }, n), h('div', { class: 'l' }, l));
+
+// The one dark card per screen, carrying its headline number. Everything else
+// on the screen stays quiet so this is what the eye lands on first.
+export const hero = (label, ...kids) =>
+  h('div', { class: 'hero' }, label ? h('div', { class: 'card-label' }, label) : null, ...kids);
+
+// Big numeral + caption, for use inside a hero.
+export const bigStat = (value, caption, opts = {}) =>
+  h('div', {},
+    h('div', { class: 'big' + (opts.small ? ' sm' : '') }, String(value)),
+    caption ? h('div', { class: 'sub' }, caption) : null);
+
+// Tinted metric tile — quieter than a card, louder than plain text.
+export const tile = (value, label, delta) =>
+  h('div', { class: 'tile' + (delta === 'plain' ? ' plain' : '') },
+    h('div', { class: 'n' }, String(value)),
+    h('div', { class: 'l' }, label),
+    delta && delta !== 'plain' ? h('div', { class: 'd' }, delta) : null);
+
+export const tiles = (...items) => h('div', { class: 'grid tiles' }, ...items);
+
+// A list with a single hairline between rows, never a border per side.
+export const list = (...rows) => h('div', { class: 'list' }, ...rows);
+
+export const listRow = (...kids) => h('div', { class: 'list-row' }, ...kids);
+
+// Empty states get an icon and a real sentence, not a grey line of text.
+export const emptyState = (iconName, text) =>
+  h('div', { class: 'empty-state' },
+    h('div', { class: 'ico' }, iconEl(iconName, 20)),
+    h('div', {}, text));
+
+export function bar(pct) {
+  const fill = h('i', { style: `width:${Math.max(0, Math.min(100, pct))}%` });
+  const el = h('div', { class: 'bar' }, fill);
+  return { el, set: p => { fill.style.width = `${Math.max(0, Math.min(100, p))}%`; } };
+}
 
 // Progress ring. Returns the element plus a setter so callers can update it
 // without rebuilding the DOM.

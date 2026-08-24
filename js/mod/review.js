@@ -4,7 +4,8 @@
 // underneath them: if the model is unavailable, or wrong, the figures above it
 // still stand on their own.
 
-import { h, card, dayKey, addDays, toast } from '../ui.js';
+import { h, card, dayKey, addDays, toast, hero,
+         tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 import { buildContext } from '../ai/context.js';
 import * as brain from '../ai/brain.js';
 
@@ -108,32 +109,44 @@ export async function render(mount, { store }) {
       h('span', { class: 'spacer' }),
       weeksBack > 0 ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { weeksBack--; paint(); } }, 'later →') : null);
 
-    const tile = (n, l, extra) => h('div', { class: 'stat' },
-      h('div', { class: 'n' }, n), h('div', { class: 'l' }, l), extra || null);
+    // Deltas are rendered as plain text under each tile rather than as coloured
+    // up/down chips: "spent less" is good and "trained less" is bad, so a single
+    // colour convention for +/- would be actively misleading here.
+    const deltaText = el => (el ? el.textContent : null);
 
-    host.append(nav, card('The week in numbers',
-      h('div', { class: 'grid two' },
-        tile(String(s.pushups), 'pushups', delta(s.pushups, prev.pushups)),
-        tile(String(s.workouts), 'workouts', delta(s.workouts, prev.workouts)),
-        tile(fmtMins(s.focusMins), 'focused', delta(s.focusMins / 60, prev.focusMins / 60, asHours)),
-        tile(`£${(s.spentPence / 100).toFixed(2)}`, 'spent', delta(s.spentPence / 100, prev.spentPence / 100, asMoney)),
-        tile(s.avgSleep != null ? `${s.avgSleep}h` : '–', `average sleep${s.nightsLogged ? ` (${s.nightsLogged} nights)` : ''}`, s.avgSleep != null && prev.avgSleep != null ? delta(s.avgSleep, prev.avgSleep, asHours) : null),
-        tile(s.habitPossible ? `${Math.round((s.habitHits / s.habitPossible) * 100)}%` : '–', 'habits hit'),
-        tile(s.avgMood != null ? String(s.avgMood) : '–', 'average mood'),
-        tile(String(s.tasksDone), 'tasks done'))));
+    host.append(
+      nav,
+      hero('This week',
+        h('div', { class: 'row wrap', style: 'gap:36px;align-items:flex-end' },
+          h('div', {},
+            h('div', { class: 'big' }, String(s.pushups)),
+            h('div', { class: 'sub' }, 'pushups' + (deltaText(delta(s.pushups, prev.pushups)) ? ` · ${deltaText(delta(s.pushups, prev.pushups))}` : ''))),
+          h('div', {},
+            h('div', { class: 'big sm' }, String(s.workouts)),
+            h('div', { class: 'sub' }, s.workouts === 1 ? 'workout' : 'workouts')),
+          h('div', {},
+            h('div', { class: 'big sm' }, fmtMins(s.focusMins)),
+            h('div', { class: 'sub' }, 'focused')))),
+      card('The week in numbers',
+        tiles(
+          tile(`£${(s.spentPence / 100).toFixed(2)}`, 'spent', deltaText(delta(s.spentPence / 100, prev.spentPence / 100, asMoney))),
+          tile(s.avgSleep != null ? `${s.avgSleep}h` : '–', `average sleep${s.nightsLogged ? ` (${s.nightsLogged} nights)` : ''}`, deltaText(s.avgSleep != null && prev.avgSleep != null ? delta(s.avgSleep, prev.avgSleep, asHours) : null)),
+          tile(s.habitPossible ? `${Math.round((s.habitHits / s.habitPossible) * 100)}%` : '–', 'habits hit'),
+          tile(s.avgMood != null ? String(s.avgMood) : '–', 'average mood'),
+          tile(String(s.tasksDone), 'tasks done'))));
 
     const focusRows = Object.entries(s.focusByProject).sort((a, b) => b[1] - a[1]);
     if (focusRows.length) {
       host.append(card('Where the focus went',
-        ...focusRows.map(([p, m]) => h('div', { class: 'row', style: 'padding:6px 0;border-top:1px solid var(--line)' },
-          h('span', {}, p), h('span', { class: 'spacer' }), h('span', { class: 'l' }, fmtMins(m))))));
+        list(...focusRows.map(([p, m]) => listRow(
+          h('span', { class: 'name' }, p), h('span', { class: 'spacer' }), h('span', { class: 'val' }, fmtMins(m)))))));
     }
 
     const catRows = Object.entries(s.spendByCategory).sort((a, b) => b[1] - a[1]);
     if (catRows.length) {
       host.append(card('Where the money went',
-        ...catRows.map(([c, p]) => h('div', { class: 'row', style: 'padding:6px 0;border-top:1px solid var(--line)' },
-          h('span', {}, c), h('span', { class: 'spacer' }), h('span', { class: 'l' }, `£${(p / 100).toFixed(2)}`)))));
+        list(...catRows.map(([c, p]) => listRow(
+          h('span', { class: 'name' }, c), h('span', { class: 'spacer' }), h('span', { class: 'val' }, `£${(p / 100).toFixed(2)}`)))))); 
     }
   }
 

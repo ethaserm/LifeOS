@@ -12,7 +12,8 @@
 // than an assumption that the data is reachable — it only works when Life OS is
 // opened in a browser that has those keys.
 
-import { h, card, dayKey, toast } from '../ui.js';
+import { h, card, dayKey, toast, hero,
+         tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 
 const DOC = 'learning';
 
@@ -54,7 +55,7 @@ export async function render(mount, { store }) {
     const past = Object.keys(d.daily).filter(k => k !== today && d.daily[k].trim()).sort().reverse().slice(0, 7);
     if (past.length) {
       dailyHost.append(h('div', { style: 'margin-top:14px' },
-        ...past.map(day => h('div', { style: 'padding:7px 0;border-top:1px solid var(--line)' },
+        ...past.map(day => h('div', { class: 'list-row', style: 'display:block' },
           h('div', { class: 'l' }, day), h('div', {}, d.daily[day])))));
     }
   }
@@ -83,7 +84,7 @@ export async function render(mount, { store }) {
     const active = d.items.filter(i => !i.finished);
     const finished = d.items.filter(i => i.finished);
 
-    if (!d.items.length) { itemsHost.append(h('p', { class: 'empty' }, 'Nothing on the go.')); return; }
+    if (!d.items.length) { itemsHost.append(emptyState('book', 'Nothing on the go.')); return; }
 
     active.forEach(it => itemsHost.append(itemRow(it)));
     if (finished.length) {
@@ -104,7 +105,7 @@ export async function render(mount, { store }) {
       paintItems();
     };
 
-    return h('div', { style: 'padding:10px 0;border-top:1px solid var(--line)' },
+    return h('div', { class: 'list-row', style: 'display:block' },
       h('div', { class: 'row', style: 'gap:10px' },
         h('span', { style: it.finished ? 'color:var(--muted);text-decoration:line-through' : '' }, it.title),
         h('span', { class: 'l' }, it.kind),
@@ -146,7 +147,7 @@ export async function render(mount, { store }) {
       h('button', { class: 'btn primary', type: 'button', onclick: addNow }, 'Add'),
       h('button', { class: 'btn ghost', type: 'button', onclick: importHub }, 'Import old hub')));
 
-    if (!d.notes.length) { notesHost.append(h('p', { class: 'empty' }, 'No notes yet.')); return; }
+    if (!d.notes.length) { notesHost.append(emptyState('note', 'No notes yet.')); return; }
 
     d.notes.forEach(n => {
       const body = h('textarea', { rows: '2', placeholder: 'Write here…', style: 'width:100%;resize:vertical;margin-top:6px' });
@@ -157,7 +158,7 @@ export async function render(mount, { store }) {
         t = setTimeout(() => save(store, { notes: doc(store).notes.map(x => x.id === n.id ? { ...x, body: body.value } : x) }), 600);
       });
 
-      notesHost.append(h('div', { style: 'padding:10px 0;border-top:1px solid var(--line)' },
+      notesHost.append(h('div', { class: 'list-row', style: 'display:block' },
         h('div', { class: 'row', style: 'gap:8px' },
           h('strong', {}, n.title),
           n.tag ? h('span', { class: 'l' }, `· ${n.tag}`) : null,

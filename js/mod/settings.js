@@ -1,6 +1,6 @@
 // Settings — sign-in, export/import, reminder times, and the raw doc list.
 
-import { h, card, toast } from '../ui.js';
+import { h, card, toast, hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 import { signIn, signOutNow, currentUser } from '../auth.js';
 import * as brain from '../ai/brain.js';
 
@@ -113,7 +113,7 @@ export async function render(mount, { store }) {
       .filter(([, v]) => v != null)
       .map(([doc, v]) => {
         const n = Array.isArray(v) ? v.length : (v && typeof v === 'object' ? Object.keys(v).length : 1);
-        return h('div', { class: 'row', style: 'padding:5px 0;border-top:1px solid var(--line)' },
+        return h('div', { class: 'list-row' },
           h('span', { class: 'mono' }, doc), h('span', { class: 'spacer' }), h('span', { class: 'l' }, `${n} entries`));
       });
 

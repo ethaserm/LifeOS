@@ -7,7 +7,7 @@
 // Chrome can serve a fresh-looking disk hit without a network round trip at all.
 // no-store forces an actual request every time.
 
-const CACHE = 'lifeos-v2';
+const CACHE = 'lifeos-v3';
 
 const SHELL = [
   './',
@@ -18,6 +18,7 @@ const SHELL = [
   './js/store.js',
   './js/auth.js',
   './js/ui.js',
+  './js/icons.js',
   './js/tasks.js',
   './js/mod/today.js',
   './js/mod/body.js',

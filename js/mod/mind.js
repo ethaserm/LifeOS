@@ -5,7 +5,8 @@
 // The date key is the WAKE day — "how did I sleep last night" belongs to the
 // morning you woke up, which is also the day whose mood/energy it explains.
 
-import { h, card, dayKey, addDays, sparkline, toast } from '../ui.js';
+import { h, card, dayKey, addDays, sparkline, toast,
+         hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 
 const DOC = 'sleep';
 
@@ -124,7 +125,7 @@ export async function render(mount, { store }) {
 
     days.forEach(day => {
       const e = data[day];
-      historyHost.append(h('div', { class: 'row', style: 'padding:7px 0;border-top:1px solid var(--line);gap:12px' },
+      historyHost.append(h('div', { class: 'list-row' },
         h('span', { style: 'width:88px' }, day),
         h('span', { class: 'l' }, e.hours != null ? `${e.hours}h` : '–'),
         h('span', { class: 'spacer' }),
