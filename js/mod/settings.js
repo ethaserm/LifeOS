@@ -8,26 +8,44 @@ const SETTINGS_DOC = 'settings';
 
 const settings = store => {
   const d = store.get(SETTINGS_DOC, null) || {};
-  return { reminderHour: d.reminderHour ?? 20, reminderOn: d.reminderOn !== false, ...d };
+  return { reminderHour: d.reminderHour ?? 20, reminderOn: d.reminderOn !== false, weeklyFocusGoal: d.weeklyFocusGoal ?? 12, ...d };
 };
 
 export async function render(mount, { store }) {
   const accountHost = h('div', {});
+  const goalHost = h('div', {});
   const remindHost = h('div', {});
   const dataHost = h('div', {});
   const aboutHost = h('div', {});
 
   mount.append(
     card('Account', accountHost),
+    card('Week goal', goalHost),
     card('Reminders', remindHost),
     card('Your data', dataHost),
     card('About', aboutHost)
   );
 
   paintAccount();
+  paintGoal();
   paintReminders();
   paintData();
   paintAbout();
+
+  function paintGoal() {
+    goalHost.innerHTML = '';
+    const s = settings(store);
+    const input = h('input', { type: 'number', min: '1', max: '80', value: String(s.weeklyFocusGoal), style: 'width:80px' });
+    input.addEventListener('change', () => {
+      const hrs = Math.min(80, Math.max(1, parseInt(input.value, 10) || 12));
+      store.update(SETTINGS_DOC, cur => ({ ...(cur || {}), weeklyFocusGoal: hrs }), {});
+      toast('Saved');
+    });
+    goalHost.append(
+      h('div', { class: 'row', style: 'gap:10px' }, h('span', {}, 'Focus hours target'), input, h('span', { class: 'l' }, 'per week')),
+      h('p', { class: 'empty', style: 'margin-top:10px' }, 'Shown as the ring at the bottom of the sidebar on desktop.')
+    );
+  }
 
   function paintAccount() {
     accountHost.innerHTML = '';
