@@ -1,7 +1,7 @@
 /* Life OS design system — warm dark.
  *
  * Reference: Ethan's "Life OS Warm Dark" canvas mock. Near-black warm bg,
- * Schibsted Grotesk for UI/numerals, IBM Plex Mono for eyebrow labels/tags/
+ * Inter for UI/numerals, IBM Plex Mono for eyebrow labels/tags/
  * dates. One accent hue per tab — everything else (tints, badges, hover,
  * the solid-fill "pop" card, glows) derives from that one hue via color-mix()
  * so a new tab only ever needs to declare --accent, nothing else.
@@ -55,7 +55,7 @@
   --sidebar-w: 236px;
   --safe-b: env(safe-area-inset-bottom, 0px);
 
-  --font-ui:   "Schibsted Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-ui:   "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   color-scheme: dark;
