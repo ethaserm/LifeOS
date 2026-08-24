@@ -527,7 +527,7 @@ input[style*="width"], textarea[style*="width"], select[style*="width"] { width:
 /* Sliding highlight behind the active dock tab, instead of just a colour
    swap — measured and positioned in app.js, this only owns the motion. */
 .tab-indicator {
-  position: absolute; top: 6px; bottom: 6px; z-index: -1;
+  position: absolute; top: 6px; bottom: 6px; left: 0; z-index: -1;
   background: var(--card-soft); border-radius: 12px;
   transition: transform .32s cubic-bezier(.16,1,.3,1), width .32s cubic-bezier(.16,1,.3,1);
 }
