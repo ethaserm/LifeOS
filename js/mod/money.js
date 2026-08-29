@@ -6,7 +6,7 @@
 // moment you sum them (0.1 + 0.2 !== 0.3), and a money tracker that drifts by a
 // penny a month is worse than useless.
 
-import { h, card, hero, bigStat, tile, tiles, list, listRow, emptyState,
+import { h, card, titledCard, hero, bigStat, tile, tiles, list, listRow, emptyState,
          dayKey, donut, toast, iconEl } from '../ui.js';
 
 const DOC = 'money';
@@ -30,7 +30,7 @@ export async function render(mount, { store }) {
 
   const cols = h('div', { class: 'cols' },
     h('div', { class: 'span' }, heroHost),
-    card('Add spend', addHost),
+    titledCard('Add spend', addHost),
     card('By category', breakdownHost),
     h('div', { class: 'span' }, card('Recent', listHost))
   );
@@ -106,7 +106,7 @@ export async function render(mount, { store }) {
     breakdownHost.innerHTML = '';
     const entries = monthEntries();
     if (!entries.length) {
-      breakdownHost.append(emptyState('money', 'Nothing logged this month yet.'));
+      breakdownHost.append(emptyState('money', 'Log a purchase and the category split appears here.'));
       return;
     }
     const byCategory = {};
@@ -122,7 +122,7 @@ export async function render(mount, { store }) {
     const d = doc(store);
     const recent = d.entries.slice(0, 30);
     if (!recent.length) {
-      listHost.append(emptyState('inbox', 'Purchases you log will show up here.'));
+      listHost.append(emptyState('inbox', 'Your most recent purchases will list here.'));
       return;
     }
 

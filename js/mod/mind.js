@@ -5,7 +5,7 @@
 // The date key is the WAKE day — "how did I sleep last night" belongs to the
 // morning you woke up, which is also the day whose mood/energy it explains.
 
-import { h, card, dayKey, addDays, sparkline, toast,
+import { h, card, titledCard, dayKey, addDays, sparkline, toast,
          hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 
 const DOC = 'sleep';
@@ -37,7 +37,7 @@ export async function render(mount, { store }) {
   const historyHost = h('div', {});
 
   mount.append(
-    card('Last night', todayHost),
+    titledCard('Last night', todayHost),
     card('Trends', trendHost),
     card('History', historyHost)
   );

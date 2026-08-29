@@ -9,7 +9,7 @@
 // No streaks, no XP — per Ethan's "just the numbers", the ring only ever shows
 // a %-complete for today, and the grid below is a plain heatmap, not a badge system.
 
-import { h, card, hero, ring, tile, tiles, list, listRow, emptyState,
+import { h, card, titledCard, hero, ring, tile, tiles, list, listRow, emptyState,
          dayKey, sparkline, editableText, toast, iconEl } from '../ui.js';
 
 const SEED = ['Worked on a project', 'Shipped something', 'Learned something new'];
@@ -59,7 +59,7 @@ export async function render(mount, { store }) {
   const heroHost = hero('Today');
   mount.append(h('div', { class: 'cols' },
     h('div', { class: 'span' }, heroHost),
-    card('Habits', habitsHost),
+    titledCard('Habits', habitsHost),
     card('Focus', focusHost),
     h('div', { class: 'span' }, card('Screen time', screenHost))
   ));

@@ -203,7 +203,7 @@ function renderWeight(mount, store) {
               class: 'btn ghost', type: 'button', style: 'padding:4px 10px',
               onclick: () => { if (confirm(`Delete the ${e.date} entry?`)) store.update('weightLog', arr => (arr || []).filter(x => x.date !== e.date), []); }
             }, '×'))))
-        : emptyState('scale', 'No weight entries yet.')
+        : emptyState('scale', 'Log a weight above and the trend line starts here.')
     )
   );
 }
@@ -269,7 +269,7 @@ function renderLog(mount, store) {
   function paintList() {
     listHost.innerHTML = '';
     const list = sessions();
-    if (!list.length) { listHost.append(emptyState('body', 'No sessions logged yet.')); return; }
+    if (!list.length) { listHost.append(emptyState('body', 'Log a session and it lands here, PRs included.')); return; }
     for (const s of list) {
       const setCount = s.exercises.reduce((n, ex) => n + ex.sets.length, 0);
       const isPR = s.exercises.some(ex => ex.sets.some(set => {

@@ -198,6 +198,47 @@ input[style*="width"], textarea[style*="width"], select[style*="width"] { width:
   text-transform: uppercase; color: var(--label); margin-bottom: 16px;
 }
 
+/* The one heading per screen that is allowed to be loud. Sentence case at
+   reading size, so it reads as a heading rather than as another label. */
+.card-title {
+  font-size: 17px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--text); margin-bottom: 16px;
+}
+
+/* Group heading inside a card (e.g. "Due today"). Sentence case and quieter
+   than .card-label so a card's own label still outranks its internal groups —
+   two identical mono eyebrows stacked inside one card read as two cards. */
+.group-label {
+  font-size: 12.5px; font-weight: 600; color: var(--muted);
+  margin-bottom: 8px;
+}
+.group-label.overdue { color: var(--accent); }
+
+/* ---------- today: day pulse ---------- */
+
+.pillars { display: flex; flex-direction: column; gap: 13px; width: 100%; }
+
+.pillar {
+  display: block; width: 100%; text-align: left;
+  padding: 0; background: none; border: 0; cursor: pointer;
+  border-radius: 8px;
+  transition: opacity .15s ease;
+}
+.pillar:hover { opacity: .72; }
+.pillar:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.pillar .bar { margin-top: 7px; }
+.pillar-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+.pillar-detail {
+  font-family: var(--font-mono); font-size: 11.5px; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.pillar svg { color: var(--muted); flex: none; }
+
+.quick-label {
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  margin-right: 2px;
+}
+
 /* The one "pop" card per screen — glow-edged dark, carries the headline
    number so the eye has somewhere to land before it reads anything else. */
 .hero {

@@ -1,6 +1,6 @@
 // AI tab — ask questions about your own tracked data.
 
-import { h, card, toast, hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
+import { h, card, titledCard, toast, hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 import { buildContext, contextSize } from '../ai/context.js';
 import * as brain from '../ai/brain.js';
 
@@ -16,7 +16,7 @@ export async function render(mount, { store }) {
   const chatHost = h('div', { style: 'min-height:40px' });
   const inputHost = h('div', {});
 
-  mount.append(card('Brain', statusHost), card('Ask', inputHost), chatHost);
+  mount.append(titledCard('Brain', statusHost), card('Ask', inputHost), chatHost);
 
   const history = [];
   paintStatus();

@@ -12,7 +12,7 @@
 // than an assumption that the data is reachable — it only works when Life OS is
 // opened in a browser that has those keys.
 
-import { h, card, dayKey, toast, hero,
+import { h, card, titledCard, dayKey, toast, hero,
          tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 
 const DOC = 'learning';
@@ -30,7 +30,7 @@ export async function render(mount, { store }) {
   const notesHost = h('div', {});
 
   mount.append(
-    card('What I learned today', dailyHost),
+    titledCard('What I learned today', dailyHost),
     card('Books and courses', itemsHost),
     card('Notes', notesHost)
   );
@@ -84,7 +84,7 @@ export async function render(mount, { store }) {
     const active = d.items.filter(i => !i.finished);
     const finished = d.items.filter(i => i.finished);
 
-    if (!d.items.length) { itemsHost.append(emptyState('book', 'Nothing on the go.')); return; }
+    if (!d.items.length) { itemsHost.append(emptyState('book', 'Add a book or course above to track progress through it.')); return; }
 
     active.forEach(it => itemsHost.append(itemRow(it)));
     if (finished.length) {
@@ -147,7 +147,7 @@ export async function render(mount, { store }) {
       h('button', { class: 'btn primary', type: 'button', onclick: addNow }, 'Add'),
       h('button', { class: 'btn ghost', type: 'button', onclick: importHub }, 'Import old hub')));
 
-    if (!d.notes.length) { notesHost.append(emptyState('note', 'No notes yet.')); return; }
+    if (!d.notes.length) { notesHost.append(emptyState('note', 'Notes you add here are searchable later.')); return; }
 
     d.notes.forEach(n => {
       const body = h('textarea', { rows: '2', placeholder: 'Write here…', style: 'width:100%;resize:vertical;margin-top:6px' });

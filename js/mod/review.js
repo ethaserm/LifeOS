@@ -4,7 +4,7 @@
 // underneath them: if the model is unavailable, or wrong, the figures above it
 // still stand on their own.
 
-import { h, card, dayKey, addDays, toast, hero,
+import { h, card, titledCard, dayKey, addDays, toast, hero,
          tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 import { buildContext } from '../ai/context.js';
 import * as brain from '../ai/brain.js';
@@ -127,7 +127,7 @@ export async function render(mount, { store }) {
           h('div', {},
             h('div', { class: 'big sm' }, fmtMins(s.focusMins)),
             h('div', { class: 'sub' }, 'focused')))),
-      card('The week in numbers',
+      titledCard('The week in numbers',
         tiles(
           tile(`£${(s.spentPence / 100).toFixed(2)}`, 'spent', deltaText(delta(s.spentPence / 100, prev.spentPence / 100, asMoney))),
           tile(s.avgSleep != null ? `${s.avgSleep}h` : '–', `average sleep${s.nightsLogged ? ` (${s.nightsLogged} nights)` : ''}`, deltaText(s.avgSleep != null && prev.avgSleep != null ? delta(s.avgSleep, prev.avgSleep, asHours) : null)),

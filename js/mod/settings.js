@@ -1,6 +1,6 @@
 // Settings — sign-in, export/import, reminder times, and the raw doc list.
 
-import { h, card, toast, hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
+import { h, card, titledCard, toast, hero, tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 import { signIn, signOutNow, currentUser } from '../auth.js';
 import * as brain from '../ai/brain.js';
 
@@ -19,7 +19,7 @@ export async function render(mount, { store }) {
   const aboutHost = h('div', {});
 
   mount.append(
-    card('Account', accountHost),
+    titledCard('Account', accountHost),
     card('Week goal', goalHost),
     card('Reminders', remindHost),
     card('Your data', dataHost),

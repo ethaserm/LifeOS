@@ -62,6 +62,13 @@ export function animateNumber(el, to, { duration = 380, from } = {}) {
 export const card = (label, ...kids) =>
   h('div', { class: 'card' }, label ? h('div', { class: 'card-label' }, label) : null, ...kids);
 
+// A card whose heading is the screen's real subject, set in sentence case at
+// reading size rather than as another mono eyebrow. Every card carrying an
+// identical uppercase micro-label is what made the app read as one flat wall of
+// panels — this is the one per screen that outranks the rest.
+export const titledCard = (title, ...kids) =>
+  h('div', { class: 'card' }, title ? h('h2', { class: 'card-title' }, title) : null, ...kids);
+
 export const stat = (n, l) =>
   h('div', { class: 'stat' }, h('div', { class: 'n' }, n), h('div', { class: 'l' }, l));
 

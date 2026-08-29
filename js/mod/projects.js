@@ -7,7 +7,7 @@
 //
 // Hours come from the focus doc's sessions, tagged by project.
 
-import { h, card, dayKey, addDays, toast, hero,
+import { h, card, titledCard, dayKey, addDays, toast, hero,
          tile, tiles, list, listRow, emptyState, iconEl } from '../ui.js';
 import * as tasks from '../tasks.js';
 
@@ -42,7 +42,7 @@ export async function render(mount, { store }) {
   const watchedHost = h('div', {});
 
   mount.append(
-    card('Hours — last 30 days', hoursHost),
+    titledCard('Where your time went', hoursHost),
     card('Roblox games', robloxHost),
     card('Project to-dos', todoHost),
     card('Watched', watchedHost)
@@ -109,7 +109,7 @@ export async function render(mount, { store }) {
     todoHost.append(h('div', { class: 'row wrap', style: 'gap:8px;margin-bottom:12px' },
       text, proj, h('button', { class: 'btn primary', type: 'button', onclick: addNow }, 'Add')));
 
-    if (!open.length) { todoHost.append(emptyState('check', 'No project tasks open.')); return; }
+    if (!open.length) { todoHost.append(emptyState('check', 'Add a task above and tag it to a project.')); return; }
 
     d.list.forEach(p => {
       const mine = open.filter(t => t.project === p);
@@ -143,7 +143,7 @@ export async function render(mount, { store }) {
     watchedHost.append(h('div', { class: 'row wrap', style: 'gap:8px;margin-bottom:12px' },
       title, channel, h('button', { class: 'btn primary', type: 'button', onclick: addNow }, 'Add')));
 
-    if (!list.length) { watchedHost.append(emptyState('film', 'Nothing logged yet.')); return; }
+    if (!list.length) { watchedHost.append(emptyState('film', 'Log a video you watched to keep a record of it.')); return; }
     list.slice(0, 20).forEach(v => {
       watchedHost.append(h('div', { class: 'list-row' },
         h('span', { class: 'l', style: 'width:52px' }, v.date.slice(5)),
